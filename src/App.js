@@ -1,34 +1,20 @@
 import { Component } from "react";
 
 class Nav extends Component {
-  
-  state = {
-    list:[]
-  }
-
-  // 컴포넌트가 생성될때 ajax call 을 통해서 초기화를 해야될경우에
-  // componentDidMount()를 ajax call을 넣고 ajax로 가져온 데이터로 직접
-  // 영향을 주는것이 아니라 state를 통해 render가 영향을 받도록 한다.
-  componentDidMount() {
-    fetch('list.json')
-      .then(function(result) {
-        return result.json();
-      })
-      .then(function(json) {
-        this.setState({list:json});
-      }.bind(this));  
-  }
 
   render() {
     var listTag = [];
-    for(var i =0; i < this.state.list.length; i++) {
-      var li = this.state.list[i];
+    for(var i =0; i < this.props.list.length; i++) {
+      var li = this.props.list[i];
+      console.log(li);
       listTag.push(
         <li key={li.id}>
           <a href={li.id} data-id={li.id} onClick={function(e) {
               e.preventDefault();
               this.props.onClick(e.target.dataset.id);
-            }.bind(this)}>{li.title}</a>
+            }.bind(this)}>
+            {li.title}
+          </a>
         </li>)
     }
 
@@ -56,14 +42,28 @@ class Article extends Component {
 class App extends Component {
 
   state = {
-    article:{title:'Welcome', desc:'Hello, React & Ajax'}
+    article:{title:'Welcome', desc:'Hello, React & Ajax'},
+    list:[]
+  }
+
+  // 컴포넌트가 생성될때 ajax call 을 통해서 초기화를 해야될경우에
+  // componentDidMount()를 ajax call을 넣고 ajax로 가져온 데이터로 직접
+  // 영향을 주는것이 아니라 state를 통해 render가 영향을 받도록 한다.
+  componentDidMount() {
+    fetch('list.json')
+      .then(function(result) {
+        return result.json();
+      })
+      .then(function(json) {
+        this.setState({list:json});
+      }.bind(this));  
   }
 
   render () {
     return (
       <div className="App">
         <h1>WEB</h1>
-        <Nav onClick={function(id) {
+        <Nav list={this.state.list} onClick={function(id) {
           fetch(id+'.json')
           .then(function(result){
             return result.json();
